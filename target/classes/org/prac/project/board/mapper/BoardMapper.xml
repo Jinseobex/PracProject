@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="org.prac.project.board.mapper.BoardMapper">
+ 
+    <!-- DTO의 arr이 null이 아니면 조건 설정, 없으면 b.bno > 0 으로 조건 주고 제목, 내용, 작성자 순으로 키워드 넣어서 쿼리문 where절에 삽입 -->
+   	<sql id="search">
+  		<if test="arr != null">
+  			<foreach item="tp" collection="arr" separator="OR" open="(" close=")">
+  			  	<if test="tp == ''.toString()">
+					b.bno > 0	  				
+  				</if>
+  				<if test="tp == 't'.toString()">
+					b.btitle like concat('%', #{keyword},'%') 	  				
+  				</if>
+  				<if test="tp == 'c'.toString()">
+					b.bcontent like concat('%', #{keyword},'%')				
+  				</if>
+  				<if test="tp == 'w'.toString()">
+					m.mid like concat('%', #{keyword},'%') 
+  				</if>
+  			</foreach>
+  		</if>
+  	</sql>
+ 
+ 	<insert id="boardInsert"> 
+		INSERT into tbl_board (btitle, bcontent, bdeleted, bregdate, bmoddate, mno)
+		VALUES (#{btitle}, #{bcontent}, #{bdeleted}, getdate(), getdate(), #{mno})
+	</insert>
+	
+	<select id="boardSelect" resultType="org.prac.project.board.dto.BoardGetOneDTO"> 
+		SELECT btitle, bcontent, bdeleted, bmoddate, mno
+		FROM tbl_board
+		WHERE bno = #{bno}
+		AND bno > 0
+	</select>
+	
+	<update id="boardUpdate">
+	 	UPDATE tbl_board
+	 	SET btitle = #{btitle}, bcontent = #{bcontent}, bdeleted = #{bdeleted}, bmoddate = getdate()
+		WHERE bno = #{bno}
+		AND bno > 0
+	</update>
+	
+	<delete id="boardDelete">
+		UPDATE tbl_board 
+		SET bdeleted = 'true'
+		WHERE bno = #{bno}
+	</delete>
+	
+	<!-- tbl_member table의 일부 정보만 가져올 것이기 때문에 LEFT OUTER JOIN. 
+	COUNT를 통해 검색결과의 총 개수를 구하고 OFFSET/FETCH NEXT로 검색 개수를 제한한다. -->
+	<select id="getPageList" resultType="org.prac.project.board.dto.BoardSearchResponseDTO">
+  		SELECT 
+		  b.bno, b.btitle, b.bcontent, b.bdeleted, b.bmoddate, m.mno, m.mid,
+		COUNT(*) OVER () AS totalCnt
+		FROM dbo.tbl_board b 	
+		LEFT OUTER JOIN dbo.tbl_member m ON b.mno = m.mno
+  		WHERE <include refid="search"></include> 
+  		AND b.bdeleted = 'false' 
+  		AND b.bno > 0
+  		GROUP BY b.bno, b.btitle, b.bcontent, b.bdeleted, b.bmoddate, m.mno, m.mid
+  		ORDER BY b.bno desc 
+  		OFFSET #{skip} ROW 
+  		FETCH NEXT #{size} ROW ONLY 
+  	</select>
+ 
+ </mapper>

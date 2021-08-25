@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="org.prac.project.member.mapper.MemberMapper">
+ 
+ 	<insert id="memberInsert"> 
+		INSERT into tbl_member (mid, mpassword, mname, maddress, mphone, mdeleted, mregdate, mmoddate)
+		VALUES (#{mid}, #{mpassword}, #{mname}, #{maddress}, #{mphone}, #{mdeleted}, getdate(), getdate())
+	</insert>
+	
+	<select id="getOneMember" resultType="org.prac.project.member.dto.MemberGetOneDTO">
+		SELECT m.mid, m.mpassword, m.mname, m.mphone, m.maddress, m.mdeleted, m.mregdate, m.mmoddate
+		FROM tbl_member m
+		WHERE m.mno = #{mno}
+		AND mno > 0
+	</select>
+	
+	<update id="memberUpdate">
+		UPDATE tbl_member
+	 	SET mpassword = #{mpassword}, mphone = #{mphone}, maddress = #{maddress}, mdeleted = #{mdeleted}, mmoddate = getdate()
+		WHERE mno = #{mno}
+		AND mno > 0
+	</update>
+	
+	<delete id="memberDelete">
+		UPDATE tbl_member
+		SET mdeleted = 'true' 
+		<!-- SET mdeleted = mdeleted ^ 1
+		이렇게 작성하면 값을 반대로 바꿈.
+		 -->
+		WHERE mno = #{mno}
+		AND mno > 0
+	</delete>
+ 
+ </mapper>
