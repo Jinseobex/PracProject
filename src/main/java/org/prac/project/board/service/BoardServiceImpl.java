@@ -46,20 +46,16 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public BoardListResponseDTO<BoardSearchResponseDTO> getPageList(BoardSearchRequestDTO dto) {
 		List<BoardSearchResponseDTO> result = boardMapper.getPageList(dto);
-		log.info("getPageList"+result);
 		
 		int totalCnt = boardMapper.getPageList(dto).get(0).getTotalCnt();
-		
-		boardMapper.getPageList(dto).forEach(boardMapper -> {
-			log.info(boardMapper);
-		});
-		
+	
 		BoardPageResultDTO dtos = new BoardPageResultDTO(dto.getPage(), dto.getSize(), totalCnt);
-		log.info("testGetPageList Result"+dtos);
+		
+		log.info("pagingResult in service"+dtos);
 		
 		return BoardListResponseDTO.<BoardSearchResponseDTO>builder()
-				.boardSearchResponseDTO(result)
-				.boardPageResultDTO(dtos)
+				.boardList(result)
+				.pageResult(dtos)
 				.build();
 	}
 

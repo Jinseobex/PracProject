@@ -67,10 +67,12 @@ public class BoardController {
 	
 	@GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<BoardListResponseDTO<?>> boardGetList(@RequestBody BoardSearchRequestDTO dto) {
+	public ResponseEntity<BoardListResponseDTO<?>> boardGetList(BoardSearchRequestDTO dto) {
 		log.info("====================== starting boardGetList");
 		log.info("=========================== dto"+dto);
-		return ResponseEntity.ok(boardService.getPageList(dto));
+		BoardListResponseDTO<BoardSearchResponseDTO> data = boardService.getPageList(dto);
+		log.info("=========================== data"+data);
+		return ResponseEntity.ok(data);
 	}
 
 }

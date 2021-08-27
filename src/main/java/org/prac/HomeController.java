@@ -1,4 +1,4 @@
-package org.prac.project;
+package org.prac;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -36,4 +36,23 @@ public class HomeController {
 		return "home";
 	}
 	
+    @RequestMapping(path = "memberSignup", method = RequestMethod.GET)
+    public String memberSignup() {
+    	return "memberSignup";
+    }
+    
+    @RequestMapping(path = "board", method = RequestMethod.GET)
+    public String board() {
+    	return "board";
+    }
+    
+    @RequestMapping(path = "login", method = RequestMethod.GET)
+    public String login() {
+    	return "login";
+    }
+	
+    @RequestMapping(path = "boardRegister", method = RequestMethod.GET)
+    public String boardRegister() {
+    	return "boardRegister";
+    }
 }

@@ -4,10 +4,26 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
  <mapper namespace="org.prac.project.member.mapper.MemberMapper">
  
+ 	<select id="memberLogin" resultType="org.prac.project.member.dto.MemberLoginResponseDTO">
+		SELECT mno,
+		COUNT(*) over () as resultNum
+		FROM dbo.tbl_member
+		WHERE mid = #{mid}
+		AND mpassword = #{mpassword}
+		AND mno > 0
+	</select>
+ 
  	<insert id="memberInsert"> 
 		INSERT into tbl_member (mid, mpassword, mname, maddress, mphone, mdeleted, mregdate, mmoddate)
 		VALUES (#{mid}, #{mpassword}, #{mname}, #{maddress}, #{mphone}, #{mdeleted}, getdate(), getdate())
 	</insert>
+	
+	<select id="idCheck" resultType="Integer">
+		SELECT count(*)
+		FROM tbl_member
+		WHERE mid = #{mid}
+		AND mno > 0
+	</select>
 	
 	<select id="getOneMember" resultType="org.prac.project.member.dto.MemberGetOneDTO">
 		SELECT m.mid, m.mpassword, m.mname, m.mphone, m.maddress, m.mdeleted, m.mregdate, m.mmoddate

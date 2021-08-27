@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardListResponseDTO<D> {
 	
-	private List<D> boardSearchResponseDTO;
+	private List<D> boardList;
 	
-	private BoardPageResultDTO boardPageResultDTO;
+	private BoardPageResultDTO pageResult;
 
 }

@@ -1,7 +1,20 @@
 package org.prac.project.member.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.servlet.http.HttpSession;
+
 import org.prac.project.member.dto.MemberGetOneDTO;
 import org.prac.project.member.dto.MemberInsertDTO;
+import org.prac.project.member.dto.MemberLoginDTO;
+import org.prac.project.member.dto.MemberLoginResponseDTO;
+import org.prac.project.member.dto.MemberSessionDTO;
 import org.prac.project.member.dto.MemberUpdateReqDTO;
 import org.prac.project.member.service.MemberService;
 import org.springframework.http.MediaType;
@@ -27,25 +40,56 @@ public class MemberController {
 	
 	private final MemberService memberService;
 	
-	@PostMapping(value= "/insert")
-	public ResponseEntity<String> memberInsert(@RequestBody MemberInsertDTO dto) {
-		log.info("======================= starting Member Insert");
+	@GetMapping(value = "/getSession", produces = MediaType.APPLICATION_JSON_VALUE)
+	public MemberSessionDTO getSession(HttpSession session) {
+		MemberSessionDTO res = (MemberSessionDTO) (session.getAttribute("userSession"));
+		return res;
+	}
+	
+	@PostMapping(value = "/login")
+	public int memberLogin(@RequestBody MemberLoginDTO dto, HttpSession session) throws InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+		log.info("=================== login dto: "+dto);
+		MemberLoginResponseDTO result = memberService.memberLogin(dto);
+		log.info("=================== login isCorrect: "+result.getResultNum());
 		
-		if(dto != null) {
-			try {
-				memberService.memberInsert(dto);
-				return ResponseEntity.ok(dto.getMid()+"회원님 회원가입 성공에 성공하셨습니다.");
-			} catch (Exception e) {
-				return null;
-			}
+		if(result.getResultNum() == 1) {
+			log.info("=================== login session set");
+
+			session.setAttribute("userSession", 
+					MemberSessionDTO.builder()
+					.mid(dto.getMid())
+					.mno(result.getMno())
+					.build()
+					);
+			
+			return 1;
+		} else {
+			log.info("=================== login false in controller");
+			return 0;
 		}
-		return null;
 		
 	}
 	
-	@GetMapping(value = "/{mno}", produces= MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value= "/insert")
+	public ResponseEntity<String> memberInsert(@RequestBody MemberInsertDTO dto) throws InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+		log.info("======================= starting Member Insert");
+				memberService.memberInsert(dto);
+				return ResponseEntity.ok(dto.getMid()+"회원님 회원가입 성공에 성공하셨습니다.");
+	}
+	
+    @PostMapping(value="/idCheck")
+    @ResponseBody
+    public int idCheck(@RequestBody String mid) throws Exception {
+        
+        int count = 0;
+        count = memberService.idCheck(mid);
+ 
+        return count;    
+    }
+
+	@GetMapping(value = "/{mno}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<MemberGetOneDTO> memberGetOne(@PathVariable Long mno) {
+	public ResponseEntity<MemberGetOneDTO> memberGetOne(@PathVariable Long mno) throws InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 		log.info("======================= starting memberGetOne");
 		
 		if(mno == null) {
@@ -68,7 +112,7 @@ public class MemberController {
 	}
 	
 	@PutMapping(value = "/{mno}")
-	public ResponseEntity<Long> memberUpdate(@RequestBody MemberUpdateReqDTO dto, @PathVariable Long mno) {
+	public ResponseEntity<Long> memberUpdate(@RequestBody MemberUpdateReqDTO dto, @PathVariable Long mno) throws InvalidKeyException, UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
 		log.info("======================= starting memberUpdate");
 		
 		if(dto != null) {

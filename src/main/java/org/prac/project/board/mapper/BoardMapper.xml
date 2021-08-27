@@ -30,8 +30,9 @@
 	</insert>
 	
 	<select id="boardSelect" resultType="org.prac.project.board.dto.BoardGetOneDTO"> 
-		SELECT btitle, bcontent, bdeleted, bmoddate, mno
-		FROM tbl_board
+		SELECT b.btitle, b.bcontent, b.bdeleted, b.bmoddate, b.mno, m.mid
+		FROM tbl_board b
+		LEFT OUTER JOIN dbo.tbl_member m ON b.mno = m.mno
 		WHERE bno = #{bno}
 		AND bno > 0
 	</select>

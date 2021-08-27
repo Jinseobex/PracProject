@@ -12,5 +12,6 @@ public class BoardGetOneDTO {
 	private boolean bdeleted;
 	private LocalDateTime bmoddate;
 	private Long mno;
+	private String mid;
 	
 }
