@@ -21,11 +21,11 @@
             <form class="ui large form">
                 <div class="ui stacked segment">
                     <div class="field">
-                        <input type="text" id="b_title" placeholder="게시글 제목" autocomplete="off" autofocus="autofocus">
+                        <input type="text" id="btitle" placeholder="게시글 제목" autocomplete="off" autofocus="autofocus">
                     </div>
                     <div class="field">
                         <div class="ui left icon input">
-                            <textarea style="resize: vertical;" id="b_content" placeholder="게시글 내용" rows="8"></textarea>
+                            <textarea style="resize: vertical;" id="bcontent" placeholder="게시글 내용" rows="8"></textarea>
                         </div>
                     </div>
                     <div class="ui fluid large teal submit button" id="write_bbs">게시글 작성하기</div>
@@ -46,35 +46,49 @@
 $(document).ready(function(){
 
 	$(function(){
-		boardInsert(1, 10, "", "")
+		boardInsert(1, 10, "")
 	});
 	
-		function boardInsert(page, size, type, keyword) {
-		
-		var btitle = page
-		var bcontent = size
-		var bdeleted = false
-		var mno = mno
+		function boardInsert(btitle, bcontent, bdeleted) {
+			
+		btitle;
+		bcontent;
+	    bdeleted;
+		const mno = 0;
 
 		$.ajax({
-			url: "/board/list?page="+page+"&size="+size+"&type="+type+"&keyword="+keyword,
+			url: "/member/getSession",
 			method: "GET",
-			contentType: "application/json; charset=utf-8",
+			contentType: "applicatio /x-www-form-urlencoded; charset = UTF-8",
 			dataType: "JSON",
 			
 			error:function(error, status, msg){
 				alert("상태코드 " + status + "에러메시지" + msg);
 			},
-			
-            success : function(data){
-            	
- 
 
-            }	
-		
-		})
-	} // end pagingList
+            success:function(data){
+            	
+				console.log("==================== getSession data: "+data)
+				
+				$.ajax({
+				url: "/board/insert",
+				method: "POST",
+				contentType: "application/json; charset=utf-8",
+				dataType: "JSON",
+				
+				error:function(error, status, msg){
+					alert("상태코드 " + status + "에러메시지" + msg);
+				},
+				
+				success : function(data){
 	
+				}	
+            	
+            	}); 
+				
+            }
+			});
+		}
 }); // end script
 
 </script>
